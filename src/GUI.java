@@ -1,4 +1,5 @@
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -8,12 +9,12 @@ public class GUI {
     private JButton button1;
 
     public GUI() {
-        button1.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Thread thread = new Thread(new run(new BuechiState(new LTL().parse(textField1.getText()))));
-                thread.start();
-            }
+        button1.addActionListener(e -> {
+            if (textField1.getText().charAt(0) != '(')
+                textField1.setText("("+textField1.getText()+")");
+            BuechiState initState = new BuechiState(new LTL().parse(textField1.getText()));
+            Thread thread = new Thread(new Run(initState));
+            EventQueue.invokeLater(thread);
         });
     }
 

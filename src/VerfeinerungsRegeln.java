@@ -1,38 +1,38 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class VerfeinerungsRegeln implements Verfeinerung {
+public class VerfeinerungsRegeln {
 
 
-    @Override
-    public List<BuechiState> applyVerfeinerung(BuechiState state) {
+
+    public static List<BuechiState> applyVerfeinerung(BuechiState state) {
         List<BuechiState> stateList = new ArrayList<>();
         LTL ltl = state.getNewF().get(0);
         switch (ltl.getOP()) {
-            case Variable:
-                stateList.add(state.addLTLOld(ltl).removeLTLNew(ltl));
-                break;
-            case AND:
-                stateList.add(state.removeLTLNew(ltl).addLTLOld(ltl).addLTLNew(ltl.left, ltl.right));
-                break;
-            case OR:
+            case Variable -> stateList.add(state.addLTLOld(ltl).removeLTLNew(ltl));
+            case AND -> stateList.add(state.removeLTLNew(ltl).addLTLOld(ltl).addLTLNew(ltl.left, ltl.right));
+            case OR -> {
                 stateList.add(state.removeLTLNew(ltl).addLTLOld(ltl).addLTLNew(ltl.left));
-                stateList.add(new BuechiState(state.getIncoming(), state.getOld(), ltl, null));
-                break;
-            case UNTIL:
+                BuechiState newBuechiState = new BuechiState();
+                state.nextStates.add(newBuechiState);
+                stateList.add(newBuechiState);
+
+            }
+            case UNTIL -> {
                 stateList.add(state.removeLTLNew(ltl).addLTLOld(ltl).addLTLNew(ltl.right));
-                stateList.add(new BuechiState(state.getIncoming(), state.getOld(), ltl, state.getNext()).addLTLNext(ltl));
-                break;
-            case GLOBAL:
-                System.err.println("I DONT KNOW");
-                break;
-            case RELEASE:
+                BuechiState newBuechiState = new BuechiState();
+                state.getIncoming().forEach(newBuechiState::addIncoming);
+                state.getOld().forEach(newBuechiState::addOld);
+                state.getNext().forEach(newBuechiState::addNext);
+                newBuechiState.addLTLNext(ltl);
+                newBuechiState.addLTLNew(ltl.left);
+                stateList.add(newBuechiState);
+            }
+            case GLOBAL, SOMETIMES -> System.err.println("I DONT KNOW");
+            case RELEASE -> {
                 stateList.add(state.removeLTLNew(ltl).addLTLOld(ltl).addLTLNew(ltl.right, ltl.left));
                 stateList.add(new BuechiState(state.getIncoming(), state.getOld(), ltl, state.getNext()).addLTLNext(ltl));
-                break;
-            case SOMETIMES:
-                System.err.println("I DONT KNOW");
-                break;
+            }
         }
 
         return stateList;

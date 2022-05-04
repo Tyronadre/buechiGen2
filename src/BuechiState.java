@@ -6,45 +6,68 @@ import java.util.stream.Collectors;
 public class BuechiState {
     private static int nextID = 0;
 
-    private final int ID;
+    private int ID;
     private List<Integer> incoming;
     private List<LTL> old;
     private List<LTL> newF;
     private List<LTL> next;
+    List<BuechiState> nextStates = new ArrayList<>();
+
+
+    public BuechiState() {
+        this.ID = nextID++;
+        this.incoming = new ArrayList<>();
+        this.old = new ArrayList<>();
+        this.newF = new ArrayList<>();
+        this.next = new ArrayList<>();
+    }
+
+    public BuechiState(int incoming, List<LTL> newF) {
+        this.ID = nextID++;
+        this.incoming = new ArrayList<>();
+        this.old = new ArrayList<>();
+        this.newF = new ArrayList<>();
+        this.next = new ArrayList<>();
+        this.incoming.add(incoming);
+        this.newF = newF;
+    }
 
     public BuechiState(List<Integer> incoming, List<LTL> old, LTL newF, List<LTL> next) {
         this.ID = nextID++;
         this.incoming = incoming == null ? new ArrayList<>() : incoming;
         this.old = old == null ? new ArrayList<>() : old;
         this.newF = new ArrayList<>();
-        if(newF != null)
+        if (newF != null)
             this.newF.add(newF);
         this.next = next == null ? new ArrayList<>() : next;
     }
 
-    public BuechiState(LTL initalLTL) {
-        this.ID = -1;
+    public BuechiState(LTL initialLTL) {
+        this.ID = nextID++;
+        this.incoming = new ArrayList<>();
+        this.old = new ArrayList<>();
         this.newF = new ArrayList<>();
-        this.newF.add(initalLTL);
+        this.next = new ArrayList<>();
+        this.newF.add(initialLTL);
     }
 
-    public void addIncoming(Integer incoming){
+    public void addIncoming(Integer incoming) {
         this.incoming.add(incoming);
     }
 
-    public void addIncoming (List<Integer> incoming) {
+    public void addIncoming(List<Integer> incoming) {
         this.incoming.addAll(incoming);
     }
 
-    public void addOld(LTL old){
+    public void addOld(LTL old) {
         this.old.add(old);
     }
 
-    public void addNewF(LTL newF){
+    public void addNewF(LTL newF) {
         this.newF.add(newF);
     }
 
-    public void addNext(LTL next){
+    public void addNext(LTL next) {
         this.next.add(next);
     }
 
@@ -91,12 +114,12 @@ public class BuechiState {
         return result;
     }
 
-    public BuechiState removeLTLNew(LTL ltl){
+    public BuechiState removeLTLNew(LTL ltl) {
         newF.remove(ltl);
         return this;
     }
 
-    public BuechiState addLTLOld(LTL ltl){
+    public BuechiState addLTLOld(LTL ltl) {
         old.add(ltl);
         return this;
     }
@@ -110,4 +133,27 @@ public class BuechiState {
         next.add(ltl);
         return this;
     }
+
+
+    @Override
+    public String toString() {
+        return "BuechiState{" +
+                "ID=" + ID +
+                ", incoming=" + incoming +
+                ", old=" + old +
+                ", newF=" + newF +
+                ", next=" + next +
+                '}';
+    }
+
+    public String graphString(){
+        var sB = new StringBuilder();
+        sB.append("ID: ").append(ID).append("\\nIncoming: ").append(incoming).append("\\nOld: ");
+        for (LTL t: old){
+            sB.append(t.getName());
+        }
+        return sB.toString();
+    }
+
+
 }

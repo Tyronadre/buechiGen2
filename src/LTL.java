@@ -68,6 +68,10 @@ public class LTL {
         return "LTL{" + "name='" + name + '\'' + ", op=" + op + ", right=" + right + ", left=" + left + '}';
     }
 
+    public String getName(){
+        return name;
+    }
+
     public String getGraphviz() {
         StringBuilder output = new StringBuilder();
         output.append("digraph g{\n");
