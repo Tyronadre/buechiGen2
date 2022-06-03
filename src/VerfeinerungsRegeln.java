@@ -5,11 +5,11 @@ public class VerfeinerungsRegeln {
 
 
 
-    public static List<BuechiState> applyVerfeinerung(BuechiState state) {
+    public static void applyVerfeinerung(BuechiState state) {
         List<BuechiState> stateList = new ArrayList<>();
         LTL ltl = state.getNewF().get(0);
         switch (ltl.getOP()) {
-            case Variable -> stateList.add(state.addLTLOld(ltl).removeLTLNew(ltl));
+            case Variable -> state.addLTLOld(ltl).removeLTLNew(ltl);
             case AND -> stateList.add(state.removeLTLNew(ltl).addLTLOld(ltl).addLTLNew(ltl.left, ltl.right));
             case OR -> {
                 stateList.add(state.removeLTLNew(ltl).addLTLOld(ltl).addLTLNew(ltl.left));
